@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hilo Bay Radio</title>
+<meta name="description" content="KHIB 88.1 FM, Hilo, Hawaiʻi. Bub hosts the morning show live from Hilo Bay and takes your calls on the air.">
+<meta name="theme-color" content="#0F1416">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230F1416'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23D8432F'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Libre+Franklin:ital,wght@0,400;0,500;0,600;1,400&family=Azeret+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#0F1416;
+    --surface:#182022;
+    --surface-2:#1F292C;
+    --line:#2A3538;
+    --ink:#EDE7DA;
+    --ink-soft:#C9C3B5;
+    --muted:#8E9994;
+    --lehua:#D8432F;
+    --lehua-glow:rgba(216,67,47,.45);
+    --dial:#E9A73B;
+    --display:"Big Shoulders Display", Impact, "Arial Narrow", sans-serif;
+    --body:"Libre Franklin", "Helvetica Neue", Arial, sans-serif;
+    --mono:"Azeret Mono", "SF Mono", Menlo, Consolas, monospace;
+    --gutter:clamp(16px, 4vw, 40px);
+    --maxw:1120px;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  html{height:100%}
+  body{
+    margin:0; background:var(--ground); color:var(--ink);
+    font-family:var(--body); font-size:17px; line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{max-width:100%; display:block}
+  a{color:var(--ink)}
+  :focus-visible{outline:2px solid var(--dial); outline-offset:3px}
+  .wrap{max-width:var(--maxw); margin-inline:auto; padding-inline:var(--gutter)}
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--muted); margin:0 0 12px;
+  }
+  h1,h2,h3{font-family:var(--display); text-wrap:balance; margin:0; line-height:.95; letter-spacing:.005em}
+  h2{font-size:clamp(34px, 5vw, 52px); font-weight:900; text-transform:uppercase}
+  p{margin:0}
+
+  /* ---------- transmitter status bar ---------- */
+  .bar{
+    position:sticky; top:env(safe-area-inset-top, 0px); z-index:20;
+    background:rgba(15,20,22,.92); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .bar .wrap{
+    display:flex; align-items:center; gap:clamp(14px, 3vw, 32px); flex-wrap:wrap;
+    padding-block:12px; min-height:64px;
+  }
+  .brand{display:flex; align-items:baseline; gap:12px; margin-right:auto}
+  .call{font-family:var(--display); font-weight:900; font-size:34px; line-height:1; letter-spacing:.02em}
+  .freq{font-family:var(--mono); font-size:13px; color:var(--dial); letter-spacing:.06em}
+  .freq small{color:var(--muted); letter-spacing:.1em}
+  .lamp{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:var(--display); font-weight:700; font-size:18px; letter-spacing:.12em;
+    padding:6px 14px 5px; border-radius:4px;
+    background:var(--lehua); color:#FFF3EE;
+    box-shadow:0 0 0 1px rgba(255,255,255,.08) inset, 0 0 22px var(--lehua-glow);
+    animation:breathe 2.8s ease-in-out infinite;
+  }
+  .lamp i{width:8px; height:8px; border-radius:50%; background:#FFF3EE; box-shadow:0 0 8px #fff}
+  @keyframes breathe{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 0 14px var(--lehua-glow)}50%{box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 0 30px var(--lehua-glow)}}
+  .vu{display:flex; align-items:flex-end; gap:3px; height:22px}
+  .vu b{width:4px; height:100%; background:var(--dial); border-radius:1px; transform-origin:bottom; opacity:.9; animation:vu 1.1s ease-in-out infinite}
+  .vu b:nth-child(1){animation-delay:-.2s; animation-duration:.9s}
+  .vu b:nth-child(2){animation-delay:-.6s; animation-duration:1.3s}
+  .vu b:nth-child(3){animation-delay:-.1s; animation-duration:1s}
+  .vu b:nth-child(4){animation-delay:-.8s; animation-duration:1.2s}
+  .vu b:nth-child(5){animation-delay:-.4s; animation-duration:.8s}
+  .vu b:nth-child(6){animation-delay:-.9s; animation-duration:1.4s}
+  @keyframes vu{0%,100%{transform:scaleY(.25)}40%{transform:scaleY(1)}70%{transform:scaleY(.55)}}
+  .readout{font-family:var(--mono); font-size:13px; color:var(--ink-soft); display:flex; gap:18px; flex-wrap:wrap; font-variant-numeric:tabular-nums}
+  .readout span{white-space:nowrap}
+  .readout .k{color:var(--muted); letter-spacing:.1em; margin-right:6px}
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative; overflow:hidden;
+    padding-block:clamp(36px, 6vw, 72px) clamp(40px, 6vw, 80px);
+    background:
+      repeating-linear-gradient(104deg, rgba(237,231,218,.035) 0 1px, transparent 1px 9px),
+      radial-gradient(70% 60% at 80% 20%, rgba(216,67,47,.10), transparent 60%),
+      var(--ground);
+  }
+  .hero .wrap{display:grid; gap:clamp(24px, 4vw, 56px); align-items:center}
+  @media (min-width: 900px){ .hero .wrap{grid-template-columns:minmax(0,7fr) minmax(0,5fr)} }
+  .host{position:relative; border-radius:6px; overflow:hidden; background:var(--surface); box-shadow:0 30px 60px -30px rgba(0,0,0,.9)}
+  .host img{width:100%; aspect-ratio:16/10; object-fit:cover; object-position:62% 30%}
+  .host figcaption{
+    position:absolute; inset:auto 0 0 0; display:flex; justify-content:space-between; gap:12px; align-items:end;
+    padding:36px 18px 14px; font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+    background:linear-gradient(to top, rgba(15,20,22,.92), rgba(15,20,22,0)); color:var(--ink-soft);
+  }
+  .host figcaption strong{font-family:var(--display); font-size:22px; letter-spacing:.04em; color:var(--ink); font-weight:900; display:block; text-transform:none}
+  .rec{display:inline-flex; align-items:center; gap:7px; color:var(--lehua)}
+  .rec i{width:8px; height:8px; border-radius:50%; background:var(--lehua); box-shadow:0 0 8px var(--lehua-glow); animation:blink 1.4s steps(1) infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .pitch h1{font-size:clamp(56px, 9vw, 112px); font-weight:900; text-transform:uppercase}
+  .pitch h1 em{font-style:normal; color:var(--lehua)}
+  .pitch .lede{font-size:clamp(17px, 1.6vw, 20px); color:var(--ink-soft); max-width:36ch; margin-top:20px}
+  .cta{display:flex; flex-direction:column; align-items:flex-start; gap:12px; margin-top:28px}
+  .btn{
+    appearance:none; border:0; cursor:pointer; border-radius:999px;
+    font-family:var(--display); font-weight:900; font-size:22px; letter-spacing:.06em; text-transform:uppercase;
+    padding:16px 28px 14px; background:var(--lehua); color:#FFF3EE;
+    box-shadow:0 12px 30px -10px var(--lehua-glow); transition:transform .15s ease, box-shadow .15s ease;
+    display:inline-flex; align-items:center; gap:12px;
+  }
+  .btn:hover{transform:translateY(-1px); box-shadow:0 16px 36px -10px var(--lehua-glow)}
+  .btn svg{width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+  .fine{font-size:14px; color:var(--muted); max-width:38ch}
+  .hint{font-family:var(--mono); font-size:13px; color:var(--dial); min-height:1.4em}
+
+  /* ---------- sections ---------- */
+  section.block{padding-block:clamp(44px, 7vw, 88px); border-top:1px solid var(--line)}
+  .lead{max-width:60ch; color:var(--ink-soft); font-size:18px; margin-top:16px}
+  .sched{list-style:none; margin:32px 0 0; padding:0; display:grid; gap:0; border-top:1px solid var(--line)}
+  .sched li{
+    display:grid; grid-template-columns:96px 1fr; gap:16px; align-items:baseline;
+    padding:16px 0; border-bottom:1px solid var(--line);
+  }
+  @media (min-width:700px){ .sched li{grid-template-columns:120px 1fr} }
+  .sched time{font-family:var(--mono); font-size:15px; color:var(--dial); font-variant-numeric:tabular-nums; letter-spacing:.04em}
+  .sched h3{font-size:24px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px}
+  .sched p{color:var(--ink-soft); max-width:62ch}
+  .sched li.now{background:linear-gradient(90deg, rgba(216,67,47,.12), transparent 70%); margin-inline:-14px; padding-inline:14px; border-radius:4px}
+  .sched li.now time::after{content:" · now"; color:var(--lehua)}
+
+  .two{display:grid; gap:clamp(24px, 4vw, 56px)}
+  @media (min-width: 860px){ .two{grid-template-columns:minmax(0,5fr) minmax(0,7fr)} }
+  .asks{list-style:none; margin:24px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:10px}
+  .asks li{
+    border:1px solid var(--line); background:var(--surface); border-radius:999px; padding:9px 16px;
+    font-size:15px; color:var(--ink-soft);
+  }
+  .asks li::before{content:"“"; color:var(--dial); margin-right:2px}
+  .asks li::after{content:"”"; color:var(--dial); margin-left:2px}
+
+  .facts{list-style:none; margin:28px 0 0; padding:0; display:grid; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:6px; overflow:hidden}
+  @media (min-width:640px){ .facts{grid-template-columns:1fr 1fr} }
+  .facts li{background:var(--surface); padding:20px 20px 18px; display:grid; gap:6px}
+  .facts .n{font-family:var(--display); font-weight:900; font-size:40px; line-height:1; color:var(--dial); font-variant-numeric:tabular-nums}
+  .facts .n small{font-family:var(--mono); font-size:13px; color:var(--muted); letter-spacing:.06em; margin-left:6px; font-weight:400}
+  .facts .l{color:var(--ink-soft); font-size:15px; max-width:34ch}
+
+  footer{border-top:1px solid var(--line); padding-block:32px 40px; color:var(--muted); font-size:14px}
+  footer .wrap{display:flex; flex-wrap:wrap; gap:16px 32px; justify-content:space-between; align-items:baseline}
+  footer .mono{font-family:var(--mono); font-size:12px; letter-spacing:.08em}
+
+  /* ElevenLabs widget: restyle its pill and call sheet to match the studio */
+  elevenlabs-convai{
+    --el-base:#182022; --el-base-hover:#1F292C; --el-base-active:#243033; --el-base-border:#2A3538;
+    --el-base-subtle:#9AA39E; --el-base-primary:#EDE7DA; --el-base-error:#D8432F;
+    --el-accent:#D8432F; --el-accent-hover:#E25542; --el-accent-active:#B9351F; --el-accent-border:#E9A73B;
+    --el-accent-subtle:#F0A99C; --el-accent-primary:#FFF3EE;
+    --el-button-radius:999px; --el-overlay-padding:20px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .lamp,.vu b,.rec i{animation:none}
+    .vu b{transform:scaleY(.6)}
+    .btn{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="bar" aria-label="Station status">
+  <div class="wrap">
+    <div class="brand">
+      <span class="call">KHIB</span>
+      <span class="freq">88.1 FM <small>· HILO, HAWAIʻI</small></span>
+    </div>
+    <span class="lamp" aria-label="On air"><i aria-hidden="true"></i>ON AIR</span>
+    <span class="vu" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b></span>
+    <div class="readout" aria-live="polite">
+      <span><span class="k">HILO</span><span id="clock">--:-- --</span> HST</span>
+      <span><span class="k">WX</span><span id="wx">tuning in…</span></span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <figure class="host">
+        <img src="host.jpg" alt="Bub, smiling at the microphone in the Hilo Bay Radio studio, headphones on the desk beside his show notes." width="1024" height="575">
+        <figcaption>
+          <span><strong>Bub</strong>Host · Studio A, Hilo</span>
+          <span class="rec"><i aria-hidden="true"></i>Live</span>
+        </figcaption>
+      </figure>
+
+      <div class="pitch">
+        <p class="eyebrow">Broadcasting from Hilo Bay</p>
+        <h1>Bub's on<br>the <em>mic.</em></h1>
+        <p class="lede">Rain on the roof, coffee in the cup, and the phones wide open. Ask about the surf at Honoliʻi, the road up Mauna Kea, or where to eat downtown. Tap the button and you're on the air.</p>
+        <div class="cta">
+          <button class="btn" id="callBtn" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 18v3M8 21h8"/></svg>
+            Call in to the show
+          </button>
+          <p class="fine">Uses your microphone. Bub answers out loud, in his own voice, in real time.</p>
+          <p class="hint" id="hint" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="show">
+    <div class="wrap">
+      <p class="eyebrow">Today on the show</p>
+      <h2>Morning drive, Hilo style</h2>
+      <p class="lead">Bub signs on before the sun clears Mauna Kea and stays until the Farmers Market crowd thins out. The live show runs 5 to 10 in the morning, Hawaiʻi Standard Time. The rest of the day the studio door stays open and he'll still pick up the line.</p>
+      <ol class="sched" id="sched">
+        <li data-from="5" data-to="6"><time>05:00</time><div><h3>Sign-on</h3><p>First light over Hilo Bay. Tide, swell at Honoliʻi, and the overnight rain gauge from Waiākea to Pāpaʻikou.</p></div></li>
+        <li data-from="6" data-to="7"><time>06:00</time><div><h3>Rain gauge</h3><p>Who got soaked, who stayed dry. Bub reads the totals and takes bets on whether Puna sees sun by noon.</p></div></li>
+        <li data-from="7" data-to="8"><time>07:00</time><div><h3>Coffee talk</h3><p>Growers from Kaʻū and Puna on what's in the cup this week, and where to find it downtown.</p></div></li>
+        <li data-from="8" data-to="9"><time>08:00</time><div><h3>Open phones</h3><p>Call in and talk story. Surf, weather, directions, the best plate lunch on Kīlauea Avenue. Anything goes.</p></div></li>
+        <li data-from="9" data-to="10"><time>09:00</time><div><h3>Summit report</h3><p>Mauna Kea Access Road conditions, summit wind and temperature, and whether it's worth the drive tonight.</p></div></li>
+        <li data-from="10" data-to="5"><time>10:00</time><div><h3>Open studio</h3><p>Show's over but the mic stays hot. Bub takes calls between songs for the rest of the day and night.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block" id="talk">
+    <div class="wrap two">
+      <div>
+        <p class="eyebrow">On the board</p>
+        <h2>Things to ask Bub</h2>
+        <p class="lead">He's a local. Try him on anything a visitor or a neighbor would want to know.</p>
+      </div>
+      <ul class="asks">
+        <li>Is it raining in Hilo right now?</li>
+        <li>How's the surf at Honoliʻi this morning?</li>
+        <li>Where should I eat in downtown Hilo?</li>
+        <li>What's the drive like to Mauna Kea?</li>
+        <li>When is the Farmers Market open?</li>
+        <li>Tell me about the Merrie Monarch Festival</li>
+        <li>What's a good beach near town?</li>
+        <li>How do I say good morning in Hawaiian?</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block" id="hilo">
+    <div class="wrap">
+      <p class="eyebrow">From the studio window</p>
+      <h2>Hilo, by the numbers</h2>
+      <ul class="facts">
+        <li><span class="n">126<small>IN / YR</small></span><span class="l">Average rainfall at Hilo Airport. The wettest city in the United States, and the show's favorite topic.</span></li>
+        <li><span class="n">13,803<small>FT</small></span><span class="l">Mauna Kea's summit, visible from the bay on a clear morning. Bub reads the road report at nine.</span></li>
+        <li><span class="n">UTC−10<small>HST</small></span><span class="l">Hawaiʻi doesn't change its clocks. When it's five in Hilo, it's eleven in New York and eight in Los Angeles, give or take the season.</span></li>
+        <li><span class="n">WED<small>&amp; SAT</small></span><span class="l">Big-market days at the Hilo Farmers Market on Kamehameha Avenue. Bub sends a lot of callers there.</span></li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong style="color:var(--ink)">KHIB Hilo Bay Radio</strong> is a fictional station. Bub is a conversational AI host built with ElevenLabs. Calls go through ElevenLabs and may be recorded by that service.</p>
+    <p class="mono">HILO, HAWAIʻI · 19.72°N 155.09°W</p>
+  </div>
+</footer>
+
+<!-- The host: ElevenLabs conversational agent -->
+<elevenlabs-convai
+  id="bub"
+  agent-id="agent_0501m2mz0najep2v8xnktzrcs2t2"
+  show-avatar-when-collapsed="true"
+  avatar-orb-color-1="#D8432F"
+  avatar-orb-color-2="#E9A73B"
+  text-contents='{"main_label":"Call the studio","start_call":"Go on air with Bub","new_call":"Call again","end_call":"Hang up","expand":"Talk to Bub","collapse":"Back to the show","listening_status":"Bub is listening…","speaking_status":"Bub is on the mic…","connecting_status":"Patching you through…","input_label":"Message the studio","input_placeholder":"Type a message for Bub","user_ended_conversation":"You hung up. Mahalo for calling.","agent_ended_conversation":"Bub had to take another call. Mahalo.","error_occurred":"The studio line dropped. Try again."}'
+></elevenlabs-convai>
+<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+
+<script>
+(function(){
+  // Give the widget the host's photo as its avatar (absolute URL so it resolves inside the widget).
+  var widget = document.getElementById('bub');
+  widget.setAttribute('avatar-image-url', new URL('host.jpg', location.href).href);
+
+  // Hilo clock, HST (no daylight saving).
+  var clockEl = document.getElementById('clock');
+  var fmt = new Intl.DateTimeFormat('en-US', {timeZone:'Pacific/Honolulu', hour:'numeric', minute:'2-digit'});
+  var hourFmt = new Intl.DateTimeFormat('en-US', {timeZone:'Pacific/Honolulu', hour:'numeric', hour12:false});
+  function tick(){
+    var now = new Date();
+    clockEl.textContent = fmt.format(now);
+    markNow(parseInt(hourFmt.format(now), 10) % 24);
+  }
+  function markNow(h){
+    var rows = document.querySelectorAll('#sched li');
+    rows.forEach(function(li){
+      var from = +li.dataset.from, to = +li.dataset.to;
+      var on = from < to ? (h >= from && h < to) : (h >= from || h < to);
+      li.classList.toggle('now', on);
+    });
+  }
+  tick(); setInterval(tick, 15000);
+
+  // Live Hilo weather from Open-Meteo (no key). Falls back quietly if offline.
+  var wx = document.getElementById('wx');
+  var codes = {0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',
+    61:'Light rain',63:'Rain',65:'Heavy rain',66:'Freezing rain',67:'Freezing rain',80:'Showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
+  fetch('https://api.open-meteo.com/v1/forecast?latitude=19.7241&longitude=-155.0868&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=Pacific%2FHonolulu')
+    .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function(d){
+      var c = d.current || {};
+      var label = codes[c.weather_code] || 'Cloudy';
+      wx.textContent = label + ' · ' + Math.round(c.temperature_2m) + '°F';
+    })
+    .catch(function(){ wx.textContent = 'Probably raining'; });
+
+  // Hero button: try to open the widget's own call button; otherwise point the visitor to it.
+  var hint = document.getElementById('hint');
+  document.getElementById('callBtn').addEventListener('click', function(){
+    var btn = widget.shadowRoot && widget.shadowRoot.querySelector('button');
+    if (btn){ btn.click(); hint.textContent = 'Connecting you to the studio…'; }
+    else { hint.textContent = 'Use the “Call the studio” button in the corner of the page.'; }
+    widget.scrollIntoView({block:'end', behavior:'smooth'});
+  });
+})();
+</script>
+</body>
+</html>
